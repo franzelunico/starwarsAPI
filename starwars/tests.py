@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from starwars.models import Planet, People
+from starwars.models import Planet, People, Rating
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
@@ -12,6 +12,7 @@ from starwars import views
 from pprint import pprint as print
 from starwars.serializers import PeopleModelSerializer
 from rest_framework.renderers import JSONRenderer
+from django.db.models import Avg, Max
 
 
 class PlanetTests(APITestCase):
@@ -113,3 +114,46 @@ class PeopleTests(TestCase):
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
     
+class RatingTests(TestCase):
+
+    def setUp(self):
+        self.planet = Planet.objects.create(
+            name='Tatooine',
+            population='200000',
+            known_residents_count=9
+        )
+        self.luke = People.objects.create(
+            name= 'Luke Skywalker',
+            height= '172',
+            mass= '77',
+            hair_color= 'blond',
+            skin_color= 'fair',
+            eye_color= 'blue',
+            birth_year= '19BBY',
+            gender= 'male',
+            species_name= '[]',
+            homeworld= self.planet
+        )
+        # 6 personas votaron
+        # 3 + 4 + 1 + 2 + 2 + 4 = 16
+        # promedio ponderado = 16/6 = 2.66
+        Rating.objects.create(rating = 3, personaje = self.luke)
+        Rating.objects.create(rating = 4, personaje = self.luke)
+        Rating.objects.create(rating = 1, personaje = self.luke)
+        Rating.objects.create(rating = 2, personaje = self.luke)
+        Rating.objects.create(rating = 2, personaje = self.luke)
+        Rating.objects.create(rating = 4, personaje = self.luke)
+
+    def test_average(self):
+        luke = People.objects.get(pk=1)
+        votos_luke = Rating.objects.filter(personaje=luke)
+        rating_luke_dic = votos_luke.aggregate(Avg('rating'))
+        rating_luke = rating_luke_dic['rating__avg']
+        self.assertEqual(rating_luke, 2.6666666666666665)
+
+    def test_max(self):
+        luke = People.objects.get(pk=1)
+        votos_luke = Rating.objects.filter(personaje=luke)
+        rating_luke_dic = votos_luke.aggregate(Max('rating'))
+        rating_max = rating_luke_dic['rating__max']
+        self.assertEqual(rating_max, 4)

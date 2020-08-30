@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django.db.models import Avg, Max
 
 
 class Planet(models.Model):
@@ -29,6 +30,24 @@ class People(models.Model):
     
     def __str__(self):
         return self.name
+
+    def rating(self):
+        luke = People.objects.get(pk=self.pk)
+        votos_luke = Rating.objects.filter(personaje=luke)
+        rating_luke_dic = votos_luke.aggregate(Avg('rating'))
+        rating_luke = rating_luke_dic['rating__avg']
+        if(rating_luke is None):
+            rating_luke = 0
+        return {'average_rating': rating_luke}
+
+    def max(self):
+        luke = People.objects.get(pk=self.pk)
+        votos_luke = Rating.objects.filter(personaje=luke)
+        rating_luke_dic = votos_luke.aggregate(Max('rating'))
+        rating_max = rating_luke_dic['rating__max']
+        if(rating_max is None):
+            rating_max = 0
+        return {'max_rating': rating_max}
 
 
 

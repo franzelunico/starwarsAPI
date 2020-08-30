@@ -80,5 +80,53 @@
     "species_name": "Droid",
     "homeworld": 1
   }
+},
+{
+  "model": "starwars.rating",
+  "pk": 1,
+  "fields": {
+    "rating": 3,
+    "personaje": 1
+  }
+},
+{
+  "model": "starwars.rating",
+  "pk": 2,
+  "fields": {
+    "rating": 4,
+    "personaje": 1
+  }
+},
+{
+  "model": "starwars.rating",
+  "pk": 3,
+  "fields": {
+    "rating": 1,
+    "personaje": 1
+  }
+},
+{
+  "model": "starwars.rating",
+  "pk": 4,
+  "fields": {
+    "rating": 2,
+    "personaje": 1
+  }
+},
+{
+  "model": "starwars.rating",
+  "pk": 5,
+  "fields": {
+    "rating": 2,
+    "personaje": 1
+  }
+},
+{
+  "model": "starwars.rating",
+  "pk": 6,
+  "fields": {
+    "rating": 4,
+    "personaje": 1
+  }
 }
 ]

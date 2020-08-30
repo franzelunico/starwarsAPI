@@ -11,13 +11,14 @@ class PlanetModelSerializer(serializers.ModelSerializer):
 
 
 class PeopleModelSerializer(serializers.ModelSerializer):
-    # ratings = RatingSerializer(many=True, read_only=True)
-    # ratings = Rating.objects.all().aggregate(Avg('rating'))
     homeworld = PlanetModelSerializer(read_only=True)
     class Meta:
         many=True
         model = People
-        fields = '__all__'
+        fields = ['id', 'name', 'height', 'mass', 'hair_color',
+                  'skin_color', 'eye_color', 'birth_year', 'gender',
+                  'species_name', 'homeworld', 'rating', 'max',]
+        read_only_fields = ['rating', 'max']
 
 
 class RatingModelSerializer(serializers.ModelSerializer):
