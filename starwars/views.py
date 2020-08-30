@@ -87,9 +87,12 @@ class CreatePeople():
         self.people.birth_year = self.people_swapi.birth_year
         self.people.gender = self.people_swapi.gender
         especies_qs = self.people_swapi.get_species()
+        specie_name = '[]'
         especies_items = especies_qs.items
-        especie_obj = especies_items[0]
-        self.people.species_name = especie_obj.name
+        if(len(especies_items)> 0):
+            especie_obj = especies_items[0]
+            specie_name = especie_obj.name
+        self.people.species_name = specie_name
         self.people.homeworld = self.getHomeworld()
         self.people.save()
 
