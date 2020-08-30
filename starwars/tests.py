@@ -9,7 +9,6 @@ from rest_framework.test import APIClient
 from rest_framework.test import APIRequestFactory
 from starwars import views
 
-client = Client()
 
 class PlanetTests(APITestCase):
     
@@ -54,23 +53,9 @@ class PlanetTests(APITestCase):
         self.assertEqual(Planet.objects.get().name, 'Tatooine')
 
     def test_retrieve(self):
-        url = reverse('planet-list')
-        data = {
-            'name': 'Tatooine',
-            'population': '200000',
-            'known_residents_count': 9
-        }
-        response = self.client.post(url, data, format='json')
-        
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Planet.objects.count(), 1)
-        self.assertEqual(Planet.objects.get().name, 'Tatooine')
-
-
-
-
+        self.test_create()
         url =  reverse('planet-detail', args={1})
-        #url =  '/planet/12/'
+        url =  '/planet/12/'
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        print(response.data)
+   
