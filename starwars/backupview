@@ -1,0 +1,157 @@
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
+import swapi
+
+@csrf_exempt
+def personaje_list(request):
+    """
+    List all code personajes, or create a new snippet.
+    """
+    if request.method == 'GET':
+        personajes = Personaje.objects.all()
+        serializer = PersonajeSerializer(personajes, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = PersonajeSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+def createHomeworld(personaje, people_swapi):
+    pk = int(people_swapi.homeworld.split('/')[-2])
+    try:
+        homeworld = Homeworld.objects.get(pk=pk)
+    except Homeworld.DoesNotExist:
+        homeworld = None
+
+    if (homeworld is None):
+        homeworld_swapi = people_swapi.get_homeworld()
+        homeworld = Homeworld()
+
+        homeworld.pk = int(homeworld_swapi.url.split('/')[-2])
+
+        homeworld.name = homeworld_swapi.name
+        homeworld.population = homeworld_swapi.population
+        residents = homeworld_swapi.get_residents()
+        residents = residents.count()
+        homeworld.known_residents_count = residents
+        homeworld.personaje = None
+    return homeworld
+
+
+def createPersonaje(personaje, people_swapi): 
+    personaje.name = people_swapi.name
+    personaje.height = people_swapi.height
+    personaje.mass = people_swapi.mass
+    personaje.hair_color = people_swapi.hair_color
+    personaje.skin_color = people_swapi.skin_color
+    personaje.eye_color = people_swapi.eye_color
+    personaje.birth_year = people_swapi.birth_year
+    personaje.gender = people_swapi.gender
+    personaje.species_name = people_swapi.species
+    return personaje
+
+
+
+@csrf_exempt
+def personaje_detail(request, pk):
+    """
+    Retrieve, update or delete a code personaje.
+    """
+    try:
+        personaje = Personaje.objects.get(pk=pk)
+    except Personaje.DoesNotExist:
+        personaje = None
+
+    if (personaje is None):
+        try:
+            people_swapi = swapi.get_person(pk)
+            personaje = Personaje()
+            personaje.pk = pk
+            personaje = createPersonaje(personaje, people_swapi)
+            homeworld = createHomeworld(personaje, people_swapi)
+            homeworld.save()
+            personaje.save()
+            homeworld.personaje = personaje
+            homeworld.save()
+            
+        except swapi.exceptions.ResourceDoesNotExist:
+            return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = PersonajeSerializer(personaje)
+        return JsonResponse(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = PersonajeSerializer(personaje, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        personaje.delete()
+        return HttpResponse(status=204)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def retrieve(self, request, pk=None):
+        personaje = None
+        try:
+            personaje = People.objects.get(pk=pk)
+        except People.DoesNotExist:
+            personaje = None
+
+        if (personaje is None):
+            personaje = People()
+            self.crearPeople(personaje, pk)
+        return super(PeopleModelViewSet).retrieve()
+    
+    def crearPeople(self, personaje, pk):
+        try:
+            people_swapi = swapi.get_person(pk)
+        except swapi.exceptions.ResourceDoesNotExist:
+            return HttpResponse(status=404)
+        planet = self.crearPlanet(people_swapi)
+
+
+
+    
+    def crearPlanet(self, people_swapi):
+        planet = None
+        swapi_planet = people_swapi.get_homeworld()
+        pk = int(swapi_planet.url.split('/')[-2])
+        try:
+            planet = Planet.objects.get(pk=pk)
+        except Planet.DoesNotExist:
+            planet = None
+        if( planet is None):
+            planet = Planet()
+            planet.pk = pk
+            planet.name = 'prueba'
+            planet.population = 'prueba'
+            planet.known_residents_count = 9
+            planet.save()
+        return planet

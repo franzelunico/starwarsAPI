@@ -1,3 +1,4 @@
 Django
 djangorestframework
-swapi
+git+https://github.com/franzelunico/swapi-python.git
+
