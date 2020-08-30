@@ -155,3 +155,5 @@ def personaje_detail(request, pk):
             planet.known_residents_count = 9
             planet.save()
         return planet
+
+            

@@ -8,9 +8,6 @@ class Planet(models.Model):
     population = models.CharField(max_length=255, default='0')
     known_residents_count = models.IntegerField(default=0)
 
-    class Meta:
-        ordering = ('name',)
-    
     def __str__(self):
         return self.name
 
