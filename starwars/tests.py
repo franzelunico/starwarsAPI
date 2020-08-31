@@ -161,16 +161,35 @@ class RatingTests(TestCase):
     def test_create_valid(self):
         luke = People.objects.get(pk=1)
         # url = reverse('character-rating', kwargs={'pk': self.luke.pk, 'voto':5})
-        url = '/character/1/rating/'
-        data = {"rating": 33,"personaje": 1}
+        url = '/character/1/rating/'     
+
+        data = {"rating": 1,"personaje": 1}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Rating.objects.count(), 7)
 
+        data = {"rating": 5,"personaje": 1}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Rating.objects.count(), 8)
+
     def test_create_not_valid(self):
         luke = People.objects.get(pk=1)
         # url = reverse('character-rating', kwargs={'pk': self.luke.pk, 'voto':5})
+        # no existe personaje con el id 12
         url = '/character/12/rating/'
-        data = {"rating": 33,"personaje": 12}
+        data = {"rating": 4,"personaje": 12}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # existe personaje con el id 1 pero el voto del rating no enta en el rago permitido
+        url = '/character/1/rating/'
+        data = {"rating": 0,"personaje": 1}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        data = {"rating": 6,"personaje": 1}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        
+

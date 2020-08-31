@@ -22,10 +22,17 @@ class PeopleModelSerializer(serializers.ModelSerializer):
         read_only_fields = ['rating', 'max']
 
 class RatingModelSerializer(serializers.ModelSerializer):
+    
     class Meta:
         many=True
         model = Rating
         fields = ['id', 'rating', 'personaje']
+
+    def validate_rating(self, value):
+        if (not 0 < value < 6):
+            raise serializers.ValidationError('El rating debe estar entre 1 y 5')
+        return value
+
 
 
 
