@@ -40,3 +40,8 @@ franzlopezsrl@code:~$ python manage.py runserver 0.0.0.0:8081
 | GET           |                  | http://localhost:8081/swagger-ui/         |
 
 
+# Swagger-ui
+![](./resourcesMarkdown/swagger.png)
+
+# CircleCI: Continuous Integration and Delivery
+![](./resourcesMarkdown/circleci.png)
