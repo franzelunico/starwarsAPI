@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from starwars.models import Planet, People, Rating
 from django.db.models import Avg
+from rest_framework.decorators import action
 
 
 class PlanetModelSerializer(serializers.ModelSerializer):
@@ -20,10 +21,11 @@ class PeopleModelSerializer(serializers.ModelSerializer):
                   'species_name', 'homeworld', 'rating', 'max',]
         read_only_fields = ['rating', 'max']
 
-
 class RatingModelSerializer(serializers.ModelSerializer):
     class Meta:
+        many=True
         model = Rating
-        fields = '__all__'
+        fields = ['id', 'rating', 'personaje']
+
 
 

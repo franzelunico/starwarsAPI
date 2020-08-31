@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 import swapi
 from django.http import HttpResponse
-
+from rest_framework import serializers
 
 class PlanetModelViewSet(viewsets.ModelViewSet):
     queryset = Planet.objects.all()
@@ -46,13 +46,27 @@ class PeopleModelViewSet(viewsets.ModelViewSet):
             instance = instance.getPeople(pk)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+    
+    # /character/{pk}/rating/$
+    @action(methods=['post'], detail=True, serializer_class=RatingModelSerializer, permission_classes=[])
+    def rating(self, request, pk=None):        
+        pk_data = request.data['personaje']
+        if(int(pk) != int(pk_data)):
+            return Response({"Error": "persona no encontrado"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+        except serializers.ValidationError:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 class RatingModelViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
     serializer_class = RatingModelSerializer
     
-
-
 class CreatePeople():
     """
     pk=1 Luke

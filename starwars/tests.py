@@ -157,3 +157,20 @@ class RatingTests(TestCase):
         rating_luke_dic = votos_luke.aggregate(Max('rating'))
         rating_max = rating_luke_dic['rating__max']
         self.assertEqual(rating_max, 4)
+
+    def test_create_valid(self):
+        luke = People.objects.get(pk=1)
+        # url = reverse('character-rating', kwargs={'pk': self.luke.pk, 'voto':5})
+        url = '/character/1/rating/'
+        data = {"rating": 33,"personaje": 1}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Rating.objects.count(), 7)
+
+    def test_create_not_valid(self):
+        luke = People.objects.get(pk=1)
+        # url = reverse('character-rating', kwargs={'pk': self.luke.pk, 'voto':5})
+        url = '/character/12/rating/'
+        data = {"rating": 33,"personaje": 12}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
