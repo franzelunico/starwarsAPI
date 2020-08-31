@@ -37,4 +37,6 @@ franzlopezsrl@code:~$ python manage.py runserver 0.0.0.0:8081
 |---------------|:----------------:|------------------------------------------:|
 | GET           |  retrieve        | http://localhost:8081/character/1/        |
 | POST          |    create        | http://localhost:8081/character/1/rating/ |
+| GET           |                  | http://localhost:8081/swagger-ui/         |
+
 

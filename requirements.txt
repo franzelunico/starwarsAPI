@@ -2,3 +2,5 @@ Django
 djangorestframework
 git+https://github.com/franzelunico/swapi-python.git
 
+pyyaml
+uritemplate
